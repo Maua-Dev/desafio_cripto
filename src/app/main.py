@@ -1,41 +1,24 @@
 
 from .entities.item import Item
 from fastapi import FastAPI
-from pydantic import BaseModel
-import hashlib
-
+from .repo.item_repository_mock import ItemRepositoryMock
+from src.app.entities.item import Item
 app = FastAPI()
 
-class NomeRequest(BaseModel):
-    nome: str
-    deslocamento: int
-
-def cifra_cezar(nome: str, deslocamento: int):
-    cezar = ""
-    for letra in nome:
-        if letra.isalpha():
-            base = ord('A') if letra.isupper() else ord('a')
-            cezar += chr((ord(letra) - base + deslocamento) % 26 + base)
-        else:
-            cezar += letra
-    return cezar
-
-def inverter_nome(nome: str):
-    return nome[::-1]
-
-def nome_binario(nome: str):
-    return ''.join(format(ord(i), '08b') for i in nome)
-
-def hash_nome(nome: str):
-    return hashlib.md5(nome.encode()).hexdigest()
-
 @app.post("/transformando_nomes")
-async def transformando_nomes(dados: NomeRequest):
+async def transformando_nome(item: Item):
+    item_mock = Item(name= item.name, deslocamento= item.deslocamento)
+    repo_mock = ItemRepositoryMock()
+    nome_cifrado = repo_mock.cifra_cezar(name= item_mock.name, deslocamento = item_mock.deslocamento)
+    nome_invertido = repo_mock.inverter_nome(name=item_mock.name)
+    nome_binario = repo_mock.nome_binario(name=item_mock.name)
+    hash_nome = repo_mock.hash_nome(name=item_mock.name)
     return {
-        "nome_cifrado": cifra_cezar(dados.nome, dados.deslocamento),
-        "nome_invertido": inverter_nome(dados.nome),
-        "nome_binario": nome_binario(dados.nome),
-        "hash_nome": hash_nome(dados.nome),
-    }
-
- 
+        "name": item_mock.name,
+        "nome_cifrado": nome_cifrado,
+        "nome_invertido": nome_invertido,
+        "nome_binario": nome_binario,
+        "hash_nome": hash_nome,
+    } 
+   
+     

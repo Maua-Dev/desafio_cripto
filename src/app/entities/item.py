@@ -15,7 +15,7 @@ class Item:
         
         validation_deslocamento = self.validate_deslocamento(deslocamento)
         if validation_deslocamento[0] is False:
-            raise ParamNotValidated("price", validation_deslocamento[1])
+            raise ParamNotValidated("deslocamento", validation_deslocamento[1])
         self.deslocamento = deslocamento
 
         
@@ -38,5 +38,4 @@ class Item:
         if deslocamento < 0:
             return (False, "deslocamento deve ser maior que 0")
         return (True, "")
-    
     
